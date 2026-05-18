@@ -134,12 +134,17 @@ def process():
         try:
             run_fifo(src, dst)
             result = extract(dst)
+            print(f"[DEBUG] extract returned {len(result)} values", flush=True)
             if len(result) == 5:
                 overall_summary, inventory, fifo_rows, meta, investment = result
+                print(f"[DEBUG] investment keys: {list(investment.keys())}", flush=True)
+                print(f"[DEBUG] commits: {len(investment.get('commits',[]))}", flush=True)
             else:
                 overall_summary, inventory, fifo_rows, meta = result
                 investment = {}
+                print("[DEBUG] OLD extract - no investment data", flush=True)
             save_data(f.filename, overall_summary, inventory, fifo_rows, meta, investment)
+            print("[DEBUG] save_data completed", flush=True)
         except Exception as e:
             return jsonify(error=str(e)), 500
         with open(dst, 'rb') as fh:
