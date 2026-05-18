@@ -15,8 +15,8 @@ except Exception as e:
     print(f"DB init warning: {e}")
 
 USERS = {
-    "ETP.MEX":    {"password": "ETP$mex2026", "role": "admin"},
-    "B2": {"password": "ETP$inv2026",   "role": "investor"},
+    "admin":    {"password": "ETP@admin2024", "role": "admin"},
+    "investor": {"password": "ETP@inv2024",   "role": "investor"},
 }
 
 # ── Auth ───────────────────────────────────────────────────────────────────────
@@ -108,12 +108,12 @@ def api_data():
         return jsonify(None)
     role = session['role']
     if role == 'investor':
-        # Investor only gets meta and overall_summary
         return jsonify({
-            "uploaded_at": data["uploaded_at"],
-            "filename":    data["filename"],
-            "meta":        data["meta"],
+            "uploaded_at":    data["uploaded_at"],
+            "filename":       data["filename"],
+            "meta":           data["meta"],
             "overall_summary": data["overall_summary"],
+            "investment":     data.get("investment", {}),
         })
     return jsonify(data)
 
@@ -133,8 +133,8 @@ def process():
         f.save(src)
         try:
             run_fifo(src, dst)
-            overall_summary, inventory, fifo_rows, meta = extract(dst)
-            save_data(f.filename, overall_summary, inventory, fifo_rows, meta)
+            overall_summary, inventory, fifo_rows, meta, investment = extract(dst)
+            save_data(f.filename, overall_summary, inventory, fifo_rows, meta, investment)
         except Exception as e:
             return jsonify(error=str(e)), 500
         with open(dst, 'rb') as fh:
