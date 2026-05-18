@@ -16,8 +16,9 @@ def extract(path, src_path=None):
     fifo_rows       = _extract_fifo(wb)
     meta            = _extract_meta(wb)
 
+    bol_tab    = _extract_bol(wb_src)
     investment = _extract_investment_summary(wb_src)
-    return overall_summary, inventory, fifo_rows, meta, investment
+    return overall_summary, inventory, fifo_rows, meta, investment, bol_tab
 
 # ── Overall Summary ────────────────────────────────────────────────────────────
 def _extract_overall_summary(wb):
@@ -304,3 +305,51 @@ def _extract_investment_summary(wb, uploaded_at=None):
             "total": total_rec,
         },
     }
+
+# ── Purchase to BOL-RTB ────────────────────────────────────────────────────────
+def _extract_bol(wb):
+    ws = wb["Purchase to BOL-RTB"]
+    f  = lambda v: float(v) if isinstance(v, (int, float)) else 0.0
+    fs = lambda v: str(v).strip() if v is not None else ""
+
+    # Summary from top-right corner (rows 2-5, col R = index 17)
+    rows = list(ws.iter_rows(values_only=True))
+    summary = {
+        "total_invoiced":      f(rows[1][17]),   # row 2 col R
+        "received_payments":   f(rows[2][17]),   # row 3
+        "open_balance":        f(rows[3][17]),   # row 4
+        "total_not_invoiced":  f(rows[4][17]),   # row 5
+    }
+
+    # Data rows (row 8+)
+    bols = []
+    for i, row in enumerate(ws.iter_rows(values_only=True), start=1):
+        if i <= 7: continue
+        if not row[2]: break
+        inv  = fs(row[17])   # R Invoice#
+        col4 = f(row[22])    # Column4: 1 if invoiced
+        col5 = f(row[23])    # Column5: 1 if balance=0
+        col6 = f(row[24])    # Column6: col4+col5
+
+        # Balance status: 'paid' | 'open' | 'not_invoiced'
+        if col4 == 0:
+            status = "not_invoiced"
+        elif col5 == 1:
+            status = "paid"
+        else:
+            status = "open"
+
+        bols.append({
+            "bol":         fs(row[5]),
+            "gallons":     round(f(row[6]), 2),
+            "liters":      round(f(row[7]), 2),
+            "product":     fs(row[8]),
+            "cost_gal":    round(f(row[16]), 4),   # Tota Cost/Gal (USD)
+            "invoice":     inv,
+            "inv_amount":  round(f(row[18]), 2),
+            "received":    round(f(row[20]), 2),
+            "balance":     round(f(row[21]), 2),
+            "status":      status,
+        })
+
+    return {"summary": summary, "rows": bols}
