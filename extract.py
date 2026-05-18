@@ -1,5 +1,6 @@
 """
 Extract structured data from a processed FIFO workbook for the dashboard.
+v2 - includes investment summary extraction
 """
 import openpyxl
 from collections import defaultdict
