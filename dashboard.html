@@ -803,10 +803,10 @@ function renderBol() {
 
   // Cards
   let html = `<div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.5rem">
-    <div class="kpi blue"><div class="kpi-label">Total Invoiced</div><div class="kpi-value">${fu(s.total_invoiced)}</div><div class="kpi-sub">MXN</div></div>
-    <div class="kpi green"><div class="kpi-label">Received Payments</div><div class="kpi-value">${fu(s.received_payments)}</div><div class="kpi-sub">MXN collected</div></div>
-    <div class="kpi red"><div class="kpi-label">Open Balance</div><div class="kpi-value">${fu(s.open_balance)}</div><div class="kpi-sub">MXN outstanding</div></div>
-    <div class="kpi orange"><div class="kpi-label">Not Invoiced Yet</div><div class="kpi-value">${fu(s.total_not_invoiced)}</div><div class="kpi-sub">MXN pending invoice</div></div>
+    <div class="kpi blue"><div class="kpi-label">Total Invoiced</div><div class="kpi-value">${fu(s.total_invoiced)}</div><div class="kpi-sub">USD</div></div>
+    <div class="kpi green"><div class="kpi-label">Received Payments</div><div class="kpi-value">${fu(s.received_payments)}</div><div class="kpi-sub">USD collected</div></div>
+    <div class="kpi red"><div class="kpi-label">Open Balance</div><div class="kpi-value">${fu(s.open_balance)}</div><div class="kpi-sub">USD outstanding</div></div>
+    <div class="kpi orange"><div class="kpi-label">Not Invoiced Yet</div><div class="kpi-value">${fu(s.total_not_invoiced)}</div><div class="kpi-sub">USD pending invoice</div></div>
   </div>`;
 
   // Table
@@ -817,11 +817,10 @@ function renderBol() {
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
+        <th>Product</th>
         <th>BOL</th>
         <th style="text-align:right">Gallons</th>
         <th style="text-align:right">Liters</th>
-        <th>Product</th>
-        <th style="text-align:right">Total Cost/Gal (USD)</th>
         <th>Invoice #</th>
         <th style="text-align:right">Invoice Amount</th>
         <th style="text-align:right">Received Payments</th>
@@ -841,11 +840,10 @@ function renderBol() {
                    :                               'transparent';
 
     html += `<tr>
+      <td>${r.product}</td>
       <td style="font-weight:500">${r.bol}</td>
       <td style="text-align:right">${fn(r.gallons)}</td>
       <td style="text-align:right">${fn(r.liters)}</td>
-      <td>${r.product}</td>
-      <td style="text-align:right">$${fd(r.cost_gal)}</td>
       <td style="color:var(--muted2);font-size:0.72rem">${r.invoice || '—'}</td>
       <td style="text-align:right">${r.inv_amount>0 ? fu(r.inv_amount) : '—'}</td>
       <td style="text-align:right">${r.received>0 ? fu(r.received) : '—'}</td>
@@ -875,7 +873,7 @@ function renderCompany() {
     .cp-permit-entity:first-child { margin-top:0; }
     .cp-table { width:100%;border-collapse:collapse;font-size:0.78rem; }
     .cp-table th { font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);text-align:left;padding:5px 8px;border-bottom:1px solid var(--border); }
-    .cp-table td { padding:7px 8px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top; }
+    .cp-table td { padding:7px 8px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;text-align:left; }
     .cp-table td:first-child { color:var(--text);font-weight:500; }
     .cp-table tr:last-child td { border-bottom:none; }
     .cp-note { font-size:0.7rem;color:var(--muted2);font-style:italic;margin-top:0.5rem; }
@@ -925,7 +923,7 @@ function renderCompany() {
   <!-- Permits -->
   <div class="cp-section">
     <div class="cp-label">Regulatory Permits</div>
-    <div class="cp-permit-entity">SENER Import Permits: Petrotal SA de CV</div>
+    <div class="cp-permit-entity">SENER Import Permits — Petrotal SA de CV</div>
     <table class="cp-table">
       <thead><tr><th>Product</th><th>Permit Number</th><th>Volume</th><th>Approx. Gallons</th></tr></thead>
       <tbody>
@@ -950,13 +948,13 @@ function renderCompany() {
     <div class="cp-label">Business Model</div>
     <div class="cp-two">
       <div class="cp-card">
-        <div class="cp-card-title">Track 1: U.S. to Mexico Import (via Petrotal)</div>
+        <div class="cp-card-title">Track 1 — U.S. to Mexico Import (via Petrotal)</div>
         <p style="margin-bottom:0.4rem">ETP sources refined fuels from any U.S. supplier at any U.S. rack and imports into Mexico using <strong>Petrotal's SENER permits</strong>, which cover diesel, regular, and premium gasoline. Product moves through two main channels:</p>
         <p style="margin-bottom:0.2rem">· <strong>By truck</strong> : crosses border points into bulk storage facilities</p>
         <p style="margin-bottom:0">· <strong>By rail</strong> : ships to terminals in the Mexican interior</p>
       </div>
       <div class="cp-card">
-        <div class="cp-card-title">Track 2: Domestic Mexico Commercialization</div>
+        <div class="cp-card-title">Track 2 — Domestic Mexico Commercialization</div>
         <p style="margin-bottom:0.4rem">When domestic pricing or logistics favor it, ETP purchases fuel already inside Mexico, priced in MXN/L, from domestic suppliers including:</p>
         <p style="margin-bottom:0.2rem">· <strong>PEMEX</strong></p>
         <p style="margin-bottom:0.2rem">· <strong>Flint Hills Mexico</strong></p>
@@ -1024,10 +1022,10 @@ function renderCompany() {
         <text x="232" y="267" text-anchor="middle" font-size="8" fill="#d29922" font-family="Inter,sans-serif">Rail — import only</text>
       </svg>
       <div class="cp-path-desc">
-        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#4a7cdc;letter-spacing:0.08em;margin-bottom:3px">PATH A: At-Rack Transaction</div><div style="font-size:0.73rem;color:var(--muted)">Customer picks up at the rack. No ETP logistics involved.</div></div>
-        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#4a7cdc;letter-spacing:0.08em;margin-bottom:3px">PATH B: ETP-Coordinated Delivery</div><div style="font-size:0.73rem;color:var(--muted)">ETP picks up at the rack and delivers directly to the customer.</div></div>
-        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#3fb950;letter-spacing:0.08em;margin-bottom:3px">PATH C: Inventory Position + Last-Mile</div><div style="font-size:0.73rem;color:var(--muted)">ETP moves product to a bulk plant. Customer picks up at the plant, or ETP dispatches last-mile delivery via third-party carrier.</div></div>
-        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#d29922;letter-spacing:0.08em;margin-bottom:3px">PATH D: Rail Paper Trade (Import Only)</div><div style="font-size:0.73rem;color:var(--muted)">Product ships by railcar to a Mexican rail terminal. ETP coordinates full rail logistics. Customer picks up at the terminal.</div></div>
+        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#4a7cdc;letter-spacing:0.08em;margin-bottom:3px">PATH A — At-Rack Transaction</div><div style="font-size:0.73rem;color:var(--muted)">Customer picks up at the rack. No ETP logistics involved.</div></div>
+        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#4a7cdc;letter-spacing:0.08em;margin-bottom:3px">PATH B — ETP-Coordinated Delivery</div><div style="font-size:0.73rem;color:var(--muted)">ETP picks up at the rack and delivers directly to the customer.</div></div>
+        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#3fb950;letter-spacing:0.08em;margin-bottom:3px">PATH C — Inventory Position + Last-Mile</div><div style="font-size:0.73rem;color:var(--muted)">ETP moves product to a bulk plant. Customer picks up at the plant, or ETP dispatches last-mile delivery via third-party carrier.</div></div>
+        <div class="cp-path-card"><div style="font-size:0.66rem;font-weight:700;color:#d29922;letter-spacing:0.08em;margin-bottom:3px">PATH D — Rail Paper Trade (Import Only)</div><div style="font-size:0.73rem;color:var(--muted)">Product ships by railcar to a Mexican rail terminal. ETP coordinates full rail logistics. Customer picks up at the terminal.</div></div>
       </div>
     </div>
   </div>
