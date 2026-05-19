@@ -378,8 +378,13 @@ async function processFile() {
 
 // ── Load data from API ─────────────────────────────────────────────────────────
 async function loadData() {
-  const res = await fetch('/api/data');
-  dashData = await res.json();
+  try {
+    const res = await fetch('/api/data');
+    dashData = await res.json();
+  } catch(e) {
+    console.error('loadData error:', e);
+    dashData = null;
+  }
   if (!dashData) {
     showEmpty(); return;
   }
