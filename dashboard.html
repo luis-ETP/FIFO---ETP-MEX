@@ -858,8 +858,7 @@ function renderInvestor() {
       steps.forEach(s => {
         html += `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem">
           <div style="font-size:0.75rem;font-weight:600;color:var(--accent);margin-bottom:0.4rem">${s.title}</div>
-          <div style="font-size:0.78rem;color:var(--muted);line-height:1.7">${s.body.replace(/
-/g,'<br>')}</div>
+          <div style="font-size:0.78rem;color:var(--muted);line-height:1.7">${(s.body||'').split('\n').join('<br>')}</div>
         </div>`;
       });
       html += `</div>`;
