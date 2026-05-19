@@ -273,6 +273,25 @@ tbody tr:hover td{background:rgba(255,255,255,0.02)}
         </div>
         <div class="upload-status" id="uploadStatus"></div>
       </div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div style="font-size:0.75rem;color:var(--muted);font-weight:500">Partner Investor Markup</div>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span style="font-size:0.72rem;color:var(--muted)">$</span>
+          <input id="markupInput" type="number" step="0.01" min="0" max="10" value="0.02"
+            style="width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+                   padding:0.35rem 0.5rem;color:var(--text);font-size:0.78rem;font-family:var(--font)">
+          <span style="font-size:0.72rem;color:var(--muted)">USD / gal</span>
+          <button onclick="saveMarkup()"
+            style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+                   padding:0.35rem 0.75rem;color:var(--muted);font-size:0.72rem;font-family:var(--font);
+                   cursor:pointer;transition:all 0.15s"
+            onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+            Save
+          </button>
+          <span id="markupStatus" style="font-size:0.7rem;color:var(--green);display:none">✓ Saved</span>
+        </div>
+      </div>
       {% endif %}
 
       <div id="overview-content">
@@ -679,7 +698,7 @@ function renderInvestor() {
 
   // ── Markup: +$0.10/gal applied only for partner_investor role ────────────────
   const MARKUP       = dashData.markup === true;
-  const MARKUP_USD   = 0.02;          // USD per gallon
+  const MARKUP_USD   = dashData.markup_usd || 0.02;          // USD per gallon
   const L_PER_GAL    = 3.7854;
 
   function getAvgFx() {
@@ -1184,8 +1203,37 @@ function renderCompany() {
   `;
 }
 
+// ── Markup setting ────────────────────────────────────────────────────────────
+async function saveMarkup() {
+  const val = parseFloat(document.getElementById('markupInput').value);
+  if (isNaN(val) || val < 0 || val > 10) return;
+  const res = await fetch('/api/settings', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({markup_usd: val})
+  });
+  if (res.ok) {
+    const st = document.getElementById('markupStatus');
+    st.style.display = 'inline';
+    setTimeout(() => st.style.display = 'none', 2000);
+    // Update live if partner_investor is viewing
+    if (dashData) { dashData.markup_usd = val; renderInvestor(); }
+  }
+}
+
+async function loadMarkupSetting() {
+  if (ROLE !== 'admin') return;
+  try {
+    const res = await fetch('/api/settings');
+    const d = await res.json();
+    const inp = document.getElementById('markupInput');
+    if (inp && d.markup_usd != null) inp.value = d.markup_usd;
+  } catch(e) {}
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────────
 loadData();
+loadMarkupSetting();
 if (ROLE === 'potential_investor') showTab('company');
 else if (ROLE === 'investor') showTab('investor');
 </script>
